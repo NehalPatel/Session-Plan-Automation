@@ -1,0 +1,14 @@
+node_modules
+dist
+.env
+.env.local
+*.log
+.DS_Store
+docs/test-*.docx
+docs/test-*.zip
+docs/ts/
+docs/ts.zip
+docs/nextract/
+docs/n.zip
+docs/new-gen.docx
+docs/textract/
