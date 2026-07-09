@@ -26,8 +26,38 @@ export function expandLectureDates(fromDate: string, toDate: string): string[] {
   return dates;
 }
 
-export function buildScheduleFromRange(fromDate: string, toDate: string): ScheduleRow[] {
-  return expandLectureDates(fromDate, toDate).map((date) => ({
+const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as const;
+
+export function formatWeekdayLabel(isoDate: string): string {
+  const date = new Date(`${isoDate}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return isoDate;
+  const weekday = WEEKDAY_LABELS[date.getDay()];
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = MONTH_LABELS[date.getMonth()];
+  const year = date.getFullYear();
+  return `${weekday}, ${day} ${month} ${year}`;
+}
+
+export function isSunday(isoDate: string): boolean {
+  const date = new Date(`${isoDate}T00:00:00`);
+  return !Number.isNaN(date.getTime()) && date.getDay() === 0;
+}
+
+export function isDateInRange(isoDate: string, fromDate: string, toDate: string): boolean {
+  return isoDate >= fromDate && isoDate <= toDate;
+}
+
+export function buildScheduleFromRange(
+  fromDate: string,
+  toDate: string,
+  includedDates?: string[],
+): ScheduleRow[] {
+  const candidates = expandLectureDates(fromDate, toDate);
+  const includedSet = includedDates ? new Set(includedDates) : null;
+  const dates = includedSet ? candidates.filter((date) => includedSet.has(date)) : candidates;
+
+  return dates.map((date) => ({
     date,
     startTime: "",
     endTime: "",

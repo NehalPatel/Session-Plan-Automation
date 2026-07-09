@@ -6,6 +6,7 @@ import {
   PLAN_STATUSES,
   UNIT_SELECTION_MODES,
 } from "./enums.js";
+import { isDateInRange, isSunday } from "./schedule.js";
 
 export const registerSchema = z.object({
   email: z.string().email(),
@@ -86,15 +87,34 @@ export const sessionPlanRowSchema = z.object({
   studentsPresent: z.string().optional().default(""),
 });
 
-export const generateSessionPlanSchema = z.object({
-  syllabusId: z.string().optional(),
-  rawText: z.string().optional(),
-  parsed: parsedSyllabusSchema.optional(),
-  metadata: planMetadataSchema,
-  schedule: z.array(scheduleRowSchema).min(1),
-  dateRange: dateRangeSchema,
-  unitSelection: unitSelectionSchema,
-});
+export const generateSessionPlanSchema = z
+  .object({
+    syllabusId: z.string().optional(),
+    rawText: z.string().optional(),
+    parsed: parsedSyllabusSchema.optional(),
+    metadata: planMetadataSchema,
+    schedule: z.array(scheduleRowSchema).min(1),
+    dateRange: dateRangeSchema,
+    unitSelection: unitSelectionSchema,
+  })
+  .superRefine((data, ctx) => {
+    for (const [index, row] of data.schedule.entries()) {
+      if (!isDateInRange(row.date, data.dateRange.fromDate, data.dateRange.toDate)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Schedule date ${row.date} is outside the selected date range`,
+          path: ["schedule", index, "date"],
+        });
+      }
+      if (isSunday(row.date)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Schedule date ${row.date} cannot be a Sunday`,
+          path: ["schedule", index, "date"],
+        });
+      }
+    }
+  });
 
 export const updateSessionPlanSchema = z.object({
   rows: z.array(sessionPlanRowSchema).optional(),

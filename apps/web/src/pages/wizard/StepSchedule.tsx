@@ -1,9 +1,21 @@
-import { BCA_CLASSES, DIVISIONS } from "@session-plan/shared";
+import { BCA_CLASSES, DIVISIONS, formatWeekdayLabel } from "@session-plan/shared";
 import type { Division } from "@session-plan/shared";
 import { useWizard } from "../../context/WizardContext";
 
 export function StepSchedule() {
-  const { metadata, dateRange, lectureDayCount, setMetadata, setDateRange } = useWizard();
+  const {
+    metadata,
+    dateRange,
+    lectureDayCount,
+    candidateDateCount,
+    candidateDates,
+    includedDates,
+    setMetadata,
+    setDateRange,
+    setIncludedDates,
+  } = useWizard();
+
+  const includedSet = new Set(includedDates);
 
   function toggleDivision(division: Division) {
     const selected = metadata.divisions;
@@ -11,6 +23,14 @@ export function StepSchedule() {
       ? selected.filter((d) => d !== division)
       : [...selected, division].sort();
     setMetadata({ divisions: next.length > 0 ? next : [division] });
+  }
+
+  function toggleLectureDate(date: string) {
+    if (includedSet.has(date)) {
+      setIncludedDates(includedDates.filter((d) => d !== date));
+      return;
+    }
+    setIncludedDates([...includedDates, date].sort());
   }
 
   return (
@@ -105,10 +125,44 @@ export function StepSchedule() {
           />
         </div>
       </div>
-      {lectureDayCount > 0 && (
+
+      {candidateDateCount > 0 && (
+        <div className="field">
+          <div className="lecture-days-header">
+            <label className="label">Lecture days</label>
+            <div className="lecture-days-actions">
+              <button type="button" className="link-btn" onClick={() => setIncludedDates(candidateDates)}>
+                Select all
+              </button>
+              <span className="muted">|</span>
+              <button type="button" className="link-btn" onClick={() => setIncludedDates([])}>
+                Clear all
+              </button>
+            </div>
+          </div>
+          <p className="muted">
+            Uncheck holidays and days with no lecture. Topics will be distributed across the selected days
+            only.
+          </p>
+          <div className="lecture-days-list">
+            {candidateDates.map((date) => (
+              <label key={date} className="lecture-day-chip">
+                <input
+                  type="checkbox"
+                  checked={includedSet.has(date)}
+                  onChange={() => toggleLectureDate(date)}
+                />
+                {formatWeekdayLabel(date)}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {candidateDateCount > 0 && (
         <p className="muted">
-          {lectureDayCount} lecture day(s) will be scheduled (Mon-Sat, excluding Sundays). Topics will be
-          distributed across these sessions.
+          {lectureDayCount} of {candidateDateCount} lecture day(s) selected (Sundays excluded; uncheck
+          holidays / no-lecture days). Topics will be distributed across these sessions.
         </p>
       )}
     </div>

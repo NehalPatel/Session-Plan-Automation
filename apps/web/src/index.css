@@ -246,3 +246,55 @@ th {
   cursor: pointer;
   font-size: 0.875rem;
 }
+
+.lecture-days-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.lecture-days-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+}
+
+.link-btn {
+  border: none;
+  background: none;
+  color: #2563eb;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+.lecture-days-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px;
+  background: #f8fafc;
+}
+
+.lecture-day-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
