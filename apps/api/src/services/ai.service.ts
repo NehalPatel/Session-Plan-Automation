@@ -17,7 +17,8 @@ function extractJson(text: string): string {
 
 function fallbackParseSyllabus(rawText: string): ParsedSyllabus {
   const units: ParsedSyllabus["units"] = [];
-  const unitRegex = /Unit[-\s]*(\d+)\s*[:.]?\s*(.+)/gi;
+  // Supports: "Unit-1: Title", "Unit 1: Title", "Unit : 1 : Title"
+  const unitRegex = /Unit\s*[-:.]?\s*(\d+)\s*[-:.]?\s*(.+)/gi;
   let match: RegExpExecArray | null;
   const unitStarts: { number: number; title: string; index: number }[] = [];
 
@@ -34,7 +35,7 @@ function fallbackParseSyllabus(rawText: string): ParsedSyllabus {
     const endIndex = i + 1 < unitStarts.length ? unitStarts[i + 1].index : rawText.length;
     const section = rawText.slice(start.index, endIndex);
     const topics: ParsedSyllabus["units"][number]["topics"] = [];
-    const topicRegex = /(\d+(?:\.\d+)+)\s+(.+?)(?=\n\d+(?:\.\d+)+|\nUnit-|\n*$)/gs;
+    const topicRegex = /(\d+(?:\.\d+)+)\s+(.+?)(?=\n\d+(?:\.\d+)+\s|\nUnit\b|\n*$)/gis;
     let topicMatch: RegExpExecArray | null;
     while ((topicMatch = topicRegex.exec(section)) !== null) {
       topics.push({ code: topicMatch[1], title: topicMatch[2].replace(/\s+/g, " ").trim() });
@@ -85,14 +86,22 @@ ${rawText}`;
       model: "gpt-4o-mini",
       temperature: 0.1,
       messages: [
-        { role: "system", content: "You extract structured syllabus data. Respond with JSON only." },
+        {
+          role: "system",
+          content:
+            "You extract structured syllabus data. Respond with JSON only. Unit headers may look like 'Unit-1: Title' or 'Unit : 1 : Title'.",
+        },
         { role: "user", content: prompt },
       ],
     });
 
     const content = response.choices[0]?.message?.content ?? "";
     const parsed = JSON.parse(extractJson(content));
-    return parsedSyllabusSchema.parse(parsed);
+    const result = parsedSyllabusSchema.parse(parsed);
+    if (!result.units.length) {
+      return fallbackParseSyllabus(rawText);
+    }
+    return result;
   } catch {
     return fallbackParseSyllabus(rawText);
   }

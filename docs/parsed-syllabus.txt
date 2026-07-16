@@ -1,0 +1,7 @@
+Unit-1: Concepts of NoSQL: MongoDB
+1.1 concepts of NoSQL. Advantages and features.
+1.1.1 MongoDB Datatypes (String, Integer, Boolean, Double, Arrays, Objects)
+1.1.2 Database creation and dropping database
+1.2 create and Drop collections
+1.3 CRUD operations (Insert, update, delete, find, Query and Projection operators)
+1.4 Operators (Projection, update, limit(), sort()) and Aggregation commands

@@ -1,0 +1,9 @@
+Unit : 1 : Open Source Web Technology and PHP Language Basics
+1.1 PHP Language Characteristics, Features and Extensions
+1.2 Language Constructs, Variables, Declarations and Types, Constants
+1.3 Use of operators and Control Structures
+1.4 Arrays, Functions and References
+1.5 PHP Configuration Directives of php.ini file
+1.6 Super Global Arrays
+1.7 Handling Session, Cookies, Form Data, File Uploads, Server Data,Server Environment
+1.8 Handling Form Data UsingJavascript
