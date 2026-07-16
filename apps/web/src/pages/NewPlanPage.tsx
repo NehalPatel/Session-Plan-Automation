@@ -17,11 +17,17 @@ export function NewPlanPage() {
   const [error, setError] = useState("");
 
   function canNext(): boolean {
-    if (step === 0) return Boolean(wizard.parsed && wizard.rawText.length >= 20);
+    if (step === 0) {
+      return Boolean(
+        wizard.parsed &&
+          wizard.rawText.length >= 20 &&
+          wizard.parsed.courseTitle.trim().length > 0,
+      );
+    }
     if (step === 1) {
       const { fromDate, toDate } = wizard.dateRange;
       return (
-        wizard.metadata.subjectName.length > 0 &&
+        wizard.metadata.subjectName.trim().length > 0 &&
         wizard.metadata.divisions.length > 0 &&
         Boolean(fromDate) &&
         Boolean(toDate) &&

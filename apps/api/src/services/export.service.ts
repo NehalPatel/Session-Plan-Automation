@@ -15,7 +15,12 @@ export async function buildDivisionExports(
   const exports: { filename: string; buffer: Buffer }[] = [];
 
   for (const division of divisions) {
-    const buffer = await buildSessionPlanDocx(rows);
+    const buffer = await buildSessionPlanDocx(rows, {
+      metadata,
+      dateRange,
+      division,
+      facultyName,
+    });
     const filename = buildSessionPlanFilename(metadata, facultyName, dateRange, division);
     exports.push({ filename, buffer });
   }

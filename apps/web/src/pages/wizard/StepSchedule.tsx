@@ -71,12 +71,9 @@ export function StepSchedule() {
           </select>
         </div>
         <div className="field">
-          <label className="label">Subject name</label>
-          <input
-            className="input"
-            value={metadata.subjectName}
-            onChange={(e) => setMetadata({ subjectName: e.target.value })}
-          />
+          <label className="label">Subject (from syllabus)</label>
+          <input className="input" value={metadata.subjectName} readOnly />
+          <p className="muted">Taken from Course title on the Syllabus step. Edit it there if needed.</p>
         </div>
       </div>
 

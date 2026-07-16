@@ -65,12 +65,13 @@ export function StepSyllabus() {
           <h3>Review parsed syllabus</h3>
           <div className="grid-2">
             <div className="field">
-              <label className="label">Course title</label>
+              <label className="label">Course title (Subject in DOCX)</label>
               <input
                 className="input"
                 value={parsed.courseTitle}
                 onChange={(e) => setParsed({ ...parsed, courseTitle: e.target.value })}
               />
+              <p className="muted">This becomes the Subject name in the downloaded session plan.</p>
             </div>
             <div className="field">
               <label className="label">Course code</label>
