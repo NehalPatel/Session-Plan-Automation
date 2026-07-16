@@ -3,6 +3,7 @@ import express from "express";
 import { connectDatabase } from "./config/db.js";
 import { config } from "./config/env.js";
 import { errorHandler } from "./middleware/validate.js";
+import { adminRouter } from "./routes/admin.routes.js";
 import { authRouter } from "./routes/auth.routes.js";
 import { sessionPlansRouter } from "./routes/sessionPlans.routes.js";
 import { syllabiRouter } from "./routes/syllabi.routes.js";
@@ -23,6 +24,7 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/auth", authRouter);
+app.use("/admin", adminRouter);
 app.use("/syllabi", syllabiRouter);
 app.use("/session-plans", sessionPlansRouter);
 

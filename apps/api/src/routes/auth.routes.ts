@@ -4,6 +4,7 @@ import { loginSchema, registerSchema } from "@session-plan/shared";
 import { User } from "../models/User.js";
 import { authMiddleware, signToken } from "../middleware/auth.js";
 import { validateBody } from "../middleware/validate.js";
+import { toUserPublic } from "../utils/userResponse.js";
 
 export const authRouter = Router();
 
@@ -17,12 +18,12 @@ authRouter.post("/register", validateBody(registerSchema), async (req, res, next
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
-    const user = await User.create({ email, passwordHash, name });
+    const user = await User.create({ email, passwordHash, name, role: "user" });
     const token = signToken({ userId: user._id.toString(), email: user.email });
 
     res.status(201).json({
       token,
-      user: { id: user._id.toString(), email: user.email, name: user.name },
+      user: toUserPublic(user),
     });
   } catch (error) {
     next(error);
@@ -47,7 +48,7 @@ authRouter.post("/login", validateBody(loginSchema), async (req, res, next) => {
     const token = signToken({ userId: user._id.toString(), email: user.email });
     res.json({
       token,
-      user: { id: user._id.toString(), email: user.email, name: user.name },
+      user: toUserPublic(user),
     });
   } catch (error) {
     next(error);
@@ -61,7 +62,7 @@ authRouter.get("/me", authMiddleware, async (req, res, next) => {
       res.status(404).json({ error: "User not found" });
       return;
     }
-    res.json({ id: user._id.toString(), email: user.email, name: user.name });
+    res.json(toUserPublic(user));
   } catch (error) {
     next(error);
   }

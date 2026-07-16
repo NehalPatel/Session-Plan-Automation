@@ -12,3 +12,6 @@ export type UnitSelectionMode = (typeof UNIT_SELECTION_MODES)[number];
 
 export const PLAN_STATUSES = ["draft", "final"] as const;
 export type PlanStatus = (typeof PLAN_STATUSES)[number];
+
+export const USER_ROLES = ["user", "admin"] as const;
+export type UserRole = (typeof USER_ROLES)[number];

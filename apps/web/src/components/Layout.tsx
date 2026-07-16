@@ -3,11 +3,12 @@ import { useAuth } from "../context/AuthContext";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
+  const homePath = user?.role === "admin" ? "/admin" : "/dashboard";
 
   return (
     <>
       <header className="nav">
-        <Link to="/dashboard">Session Plan Automation</Link>
+        <Link to={homePath}>Session Plan Automation</Link>
         <div className="nav-actions">
           {user && <span>{user.name}</span>}
           {user ? (

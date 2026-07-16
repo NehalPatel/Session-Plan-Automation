@@ -14,6 +14,7 @@
     "build:web": "npm run build -w @session-plan/shared && npm run build -w @session-plan/web",
     "smoke": "node scripts/smoke-test.mjs",
     "test:download": "node scripts/test-download.mjs",
-    "test": "npm run test -w @session-plan/shared"
+    "test": "npm run test -w @session-plan/shared",
+    "seed:admin": "npm run seed:admin -w @session-plan/api"
   }
 }

@@ -1,5 +1,12 @@
 import { z } from "zod";
-import type { BcaClass, DeliveryMethod, Division, PlanStatus, UnitSelectionMode } from "./enums.js";
+import type {
+  BcaClass,
+  DeliveryMethod,
+  Division,
+  PlanStatus,
+  UnitSelectionMode,
+  UserRole,
+} from "./enums.js";
 import {
   dateRangeSchema,
   generateSessionPlanSchema,
@@ -34,6 +41,28 @@ export interface UserPublic {
   id: string;
   email: string;
   name: string;
+  role: UserRole;
+}
+
+export interface AdminUserPlanSummary {
+  id: string;
+  subjectName: string;
+  class: string;
+  semester: number;
+  divisions: string[];
+  status: PlanStatus;
+  sessionCount: number;
+  updatedAt: string;
+}
+
+export interface AdminUserSummary {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  createdAt: string;
+  planCount: number;
+  plans: AdminUserPlanSummary[];
 }
 
 export interface AuthResponse {
@@ -63,4 +92,4 @@ export interface SessionPlanDocument {
   updatedAt: string;
 }
 
-export type { BcaClass, DeliveryMethod, Division, PlanStatus, UnitSelectionMode };
+export type { BcaClass, DeliveryMethod, Division, PlanStatus, UnitSelectionMode, UserRole };

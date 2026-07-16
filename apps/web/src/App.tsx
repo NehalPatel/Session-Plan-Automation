@@ -1,9 +1,12 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./context/AuthContext";
 import { WizardProvider } from "./context/WizardContext";
+import { AdminRoute } from "./components/AdminRoute";
+import { HomeRedirect } from "./components/HomeRedirect";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { AdminPage } from "./pages/AdminPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LoginPage } from "./pages/LoginPage";
 import { NewPlanPage } from "./pages/NewPlanPage";
@@ -27,7 +30,10 @@ export function App() {
                   <Route path="/plans/new" element={<NewPlanPage />} />
                   <Route path="/plans/:id" element={<PlanDetailPage />} />
                 </Route>
-                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                <Route element={<AdminRoute />}>
+                  <Route path="/admin" element={<AdminPage />} />
+                </Route>
+                <Route path="*" element={<HomeRedirect />} />
               </Routes>
             </Layout>
           </BrowserRouter>
