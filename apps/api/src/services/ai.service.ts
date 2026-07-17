@@ -34,12 +34,27 @@ function fallbackParseSyllabus(rawText: string): ParsedSyllabus {
     const start = unitStarts[i];
     const endIndex = i + 1 < unitStarts.length ? unitStarts[i + 1].index : rawText.length;
     const section = rawText.slice(start.index, endIndex);
+    const lines = section
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+
+    // First line is the unit header; each following line is one topic.
     const topics: ParsedSyllabus["units"][number]["topics"] = [];
-    const topicRegex = /(\d+(?:\.\d+)+)\s+(.+?)(?=\n\d+(?:\.\d+)+\s|\nUnit\b|\n*$)/gis;
-    let topicMatch: RegExpExecArray | null;
-    while ((topicMatch = topicRegex.exec(section)) !== null) {
-      topics.push({ code: topicMatch[1], title: topicMatch[2].replace(/\s+/g, " ").trim() });
+    for (let lineIndex = 1; lineIndex < lines.length; lineIndex += 1) {
+      const line = lines[lineIndex]!;
+      if (/^Unit\s*[-:.]?\s*\d+/i.test(line)) continue;
+
+      const numbered = line.match(/^(\d+(?:\.\d+)*)\s+(.*)$/);
+      if (numbered) {
+        const code = numbered[1]!;
+        const title = numbered[2]!.trim() || code;
+        topics.push({ code, title });
+      } else {
+        topics.push({ code: `${start.number}.${lineIndex}`, title: line });
+      }
     }
+
     if (topics.length === 0) {
       topics.push({ code: `${start.number}.0`, title: start.title });
     }
@@ -76,7 +91,8 @@ export async function parseSyllabusWithAi(rawText: string): Promise<ParsedSyllab
   "referenceBooks": ["book 1", "book 2"]
 }
 
-Include all numbered subtopics. Preserve unit order.
+Include every non-empty line under a unit as its own topic (newline ends a topic).
+Preserve unit order and topic codes when present (e.g. 1.1).
 
 SYLLABUS TEXT:
 ${rawText}`;
@@ -89,7 +105,7 @@ ${rawText}`;
         {
           role: "system",
           content:
-            "You extract structured syllabus data. Respond with JSON only. Unit headers may look like 'Unit-1: Title' or 'Unit : 1 : Title'.",
+            "You extract structured syllabus data. Respond with JSON only. Unit headers may look like 'Unit-1: Title' or 'Unit : 1 : Title'. Treat each line under a unit as one topic.",
         },
         { role: "user", content: prompt },
       ],

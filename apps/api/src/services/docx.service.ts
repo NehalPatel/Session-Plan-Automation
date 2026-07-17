@@ -40,13 +40,21 @@ function formatToday(): string {
   return `${day}/${month}/${year}`;
 }
 
-function setRowTexts(rowXml: string, values: string[]): string {
+function setCellText(cellXml: string, value: string): string {
+  const open = cellXml.match(/^<w:tc(?:\s[^>]*)?>/)?.[0] ?? "<w:tc>";
+  const tcPr = cellXml.match(/<w:tcPr>[\s\S]*?<\/w:tcPr>/)?.[0] ?? "";
+  const pPr = cellXml.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)?.[0] ?? "";
+  const rPr = cellXml.match(/<w:rPr>[\s\S]*?<\/w:rPr>/)?.[0] ?? "";
+  const text = escapeXml(value);
+  return `${open}${tcPr}<w:p>${pPr}<w:r>${rPr}<w:t xml:space="preserve">${text}</w:t></w:r></w:p></w:tc>`;
+}
+
+function setRowCells(rowXml: string, values: string[]): string {
   let index = 0;
-  return rowXml.replace(/<w:t(?:\s[^>]*)?>[\s\S]*?<\/w:t>/g, (match) => {
-    const open = match.match(/<w:t(?:\s[^>]*)?>/)?.[0] ?? "<w:t>";
-    const value = escapeXml(values[index] ?? "");
+  return rowXml.replace(/<w:tc(?:\s[^>]*)?>[\s\S]*?<\/w:tc>/g, (cell) => {
+    const next = setCellText(cell, values[index] ?? "");
     index += 1;
-    return `${open}${value}</w:t>`;
+    return next;
   });
 }
 
@@ -99,7 +107,7 @@ function fillSessionTable(xml: string, rows: SessionPlanRow[]): string {
 
   const headerRow = tableRows[0]!;
   const dataRowTemplate = tableRows[1]!;
-  const generatedRows = rows.map((row) => setRowTexts(dataRowTemplate, rowValues(row)));
+  const generatedRows = rows.map((row) => setRowCells(dataRowTemplate, rowValues(row)));
   const headerEnd = table.indexOf(headerRow) + headerRow.length;
   const tableClose = table.lastIndexOf("</w:tbl>");
   const newTable = `${table.slice(0, headerEnd)}${generatedRows.join("")}${table.slice(tableClose)}`;
