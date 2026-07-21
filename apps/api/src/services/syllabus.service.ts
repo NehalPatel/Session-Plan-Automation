@@ -1,6 +1,7 @@
 import { parsedSyllabusSchema, type ParsedSyllabus } from "@session-plan/shared";
 
-const UNIT_HEADER_RE = /^Unit\s*[-:.]?\s*(\d+)\s*[-:.]?\s*(.*)$/i;
+/** Only lines that start with "Unit-" open a new unit (e.g. Unit-1: Title). */
+const UNIT_HEADER_RE = /^Unit-(\d+)\s*[:.\-]?\s*(.*)$/i;
 
 function extractUnitHeader(line: string): { number: number; title: string } | null {
   const match = line.match(UNIT_HEADER_RE);
@@ -26,8 +27,7 @@ function parseTopicLine(
 
 /**
  * Deterministic syllabus parse (no AI).
- * Format: first line = unit; each following line = one topic.
- * Additional "Unit N: ..." lines start a new unit.
+ * A line starting with "Unit-" starts a new unit; every other line is a topic of that unit.
  */
 export function parseSyllabus(rawText: string): ParsedSyllabus {
   const lines = rawText
@@ -46,40 +46,42 @@ export function parseSyllabus(rawText: string): ParsedSyllabus {
     });
   }
 
-  let currentNumber = 1;
+  let currentNumber = 0;
   let currentTitle = "";
   let currentTopics: ParsedSyllabus["units"][number]["topics"] = [];
+  let unitStarted = false;
 
   const flush = () => {
-    if (!currentTitle && currentTopics.length === 0) return;
-    const title = currentTitle || `Unit ${currentNumber}`;
+    if (!unitStarted) return;
+    const number = currentNumber || 1;
+    const title = currentTitle || `Unit ${number}`;
     const topics =
       currentTopics.length > 0
         ? currentTopics
-        : [{ code: `${currentNumber}.0`, title }];
-    units.push({ number: currentNumber, title, topics });
+        : [{ code: `${number}.0`, title }];
+    units.push({ number, title, topics });
   };
 
-  const firstHeader = extractUnitHeader(lines[0]!);
-  if (firstHeader) {
-    currentNumber = firstHeader.number;
-    currentTitle = firstHeader.title;
-  } else {
+  const ensureUnit = () => {
+    if (unitStarted) return;
     currentNumber = 1;
-    currentTitle = lines[0]!;
-  }
+    currentTitle = `Unit ${currentNumber}`;
+    currentTopics = [];
+    unitStarted = true;
+  };
 
-  for (let i = 1; i < lines.length; i += 1) {
-    const line = lines[i]!;
+  for (const line of lines) {
     const header = extractUnitHeader(line);
     if (header) {
       flush();
       currentNumber = header.number;
       currentTitle = header.title;
       currentTopics = [];
+      unitStarted = true;
       continue;
     }
-    currentTopics.push(parseTopicLine(line, currentNumber, currentTopics.length + 1));
+    ensureUnit();
+    currentTopics.push(parseTopicLine(line, currentNumber || 1, currentTopics.length + 1));
   }
   flush();
 

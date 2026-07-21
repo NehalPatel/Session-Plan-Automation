@@ -46,7 +46,7 @@ export function StepSyllabus() {
           className="textarea"
           value={rawText}
           onChange={(e) => setRawText(e.target.value)}
-          placeholder={"First line: Unit name\nEach following line: one topic"}
+          placeholder={"Unit-1: Unit title\nTopic line 1\nTopic line 2\nUnit-2: Next unit\n..."}
         />
       </div>
       <div className="field">

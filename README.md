@@ -128,7 +128,7 @@ Re-running the seed updates password and promotes an existing email to admin.
 ### Faculty
 
 1. Register / login.
-2. **Step 1:** Paste syllabus text and prepare lectures (first line = unit, each following line = topic).
+2. **Step 1:** Paste syllabus text and prepare lectures (`Unit-1: ...` starts a unit; each following line is a topic until the next `Unit-`).
 3. **Step 2:** Enter AY, class, semester, divisions, lecture dates; uncheck holidays.
 4. **Step 3:** Choose units.
 5. **Generate** → preview/edit → **Download DOCX**.
