@@ -1,13 +1,12 @@
 # Session Plan Automation
 
-Automate college session plans from syllabus text, lecture schedules, and AI-expanded topics.
+Automate college session plans from syllabus text and lecture schedules.
 
 ## Stack
 
 - **Frontend:** React + Vite (`apps/web`) → Vercel
 - **Backend:** Express + TypeScript (`apps/api`) → Render
 - **Database:** MongoDB Atlas
-- **AI:** OpenAI API (optional; regex fallback when unset)
 
 ## Local development
 
@@ -29,7 +28,6 @@ Edit `apps/api/.env`:
 ```
 MONGODB_URI=mongodb://127.0.0.1:27017/sessionplan
 JWT_SECRET=dev-secret
-OPENAI_API_KEY=sk-...   # optional
 CORS_ORIGIN=http://localhost:5173
 ```
 
@@ -76,7 +74,6 @@ mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net/sessionplan?retryWrites=t
 | `NODE_ENV` | `production` |
 | `MONGODB_URI` | Atlas URI with `/sessionplan` |
 | `JWT_SECRET` | Long random string (Render can generate) |
-| `OPENAI_API_KEY` | Your OpenAI key (optional) |
 | `CORS_ORIGIN` | `https://session-plan-automation-web.vercel.app` (no trailing slash) |
 
 **Service settings:**
@@ -131,7 +128,7 @@ Re-running the seed updates password and promotes an existing email to admin.
 ### Faculty
 
 1. Register / login.
-2. **Step 1:** Paste syllabus text and parse.
+2. **Step 1:** Paste syllabus text and prepare lectures (first line = unit, each following line = topic).
 3. **Step 2:** Enter AY, class, semester, divisions, lecture dates; uncheck holidays.
 4. **Step 3:** Choose units.
 5. **Generate** → preview/edit → **Download DOCX**.

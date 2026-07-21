@@ -37,8 +37,8 @@ sessionPlansRouter.post("/generate", generateLimiter, validateBody(generateSessi
     }
 
     if (!parsed && req.body.rawText) {
-      const { parseSyllabusWithAi } = await import("../services/ai.service.js");
-      parsed = await parseSyllabusWithAi(req.body.rawText);
+      const { parseSyllabus } = await import("../services/syllabus.service.js");
+      parsed = parseSyllabus(req.body.rawText);
     }
 
     if (!parsed) {

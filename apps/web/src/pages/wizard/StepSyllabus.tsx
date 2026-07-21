@@ -19,7 +19,7 @@ export function StepSyllabus() {
       const res = await api.post<{ parsed: ParsedSyllabus }>("/syllabi/parse", { rawText });
       setParsed(res.parsed);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to parse syllabus");
+      setError(err instanceof Error ? err.message : "Failed to prepare lectures");
     } finally {
       setLoading(false);
     }
@@ -46,7 +46,7 @@ export function StepSyllabus() {
           className="textarea"
           value={rawText}
           onChange={(e) => setRawText(e.target.value)}
-          placeholder="Paste Course Content / Unit-wise syllabus here..."
+          placeholder={"First line: Unit name\nEach following line: one topic"}
         />
       </div>
       <div className="field">
@@ -55,14 +55,14 @@ export function StepSyllabus() {
       </div>
       <div className="row-actions">
         <button className="btn btn-primary" onClick={parseSyllabus} disabled={loading || rawText.length < 20}>
-          {loading ? "Parsing..." : "Parse Syllabus"}
+          {loading ? "Preparing..." : "Prepare lectures"}
         </button>
       </div>
       {error && <p className="error">{error}</p>}
 
       {parsed && (
         <div>
-          <h3>Review parsed syllabus</h3>
+          <h3>Review prepared lectures</h3>
           <div className="grid-2">
             <div className="field">
               <label className="label">Course title (Subject in DOCX)</label>

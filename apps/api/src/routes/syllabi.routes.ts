@@ -4,7 +4,7 @@ import { parseSyllabusRequestSchema, saveSyllabusSchema } from "@session-plan/sh
 import { authMiddleware } from "../middleware/auth.js";
 import { validateBody } from "../middleware/validate.js";
 import { Syllabus } from "../models/Syllabus.js";
-import { parseSyllabusWithAi } from "../services/ai.service.js";
+import { parseSyllabus } from "../services/syllabus.service.js";
 
 export const syllabiRouter = Router();
 
@@ -19,7 +19,7 @@ syllabiRouter.use(authMiddleware);
 
 syllabiRouter.post("/parse", parseLimiter, validateBody(parseSyllabusRequestSchema), async (req, res, next) => {
   try {
-    const parsed = await parseSyllabusWithAi(req.body.rawText);
+    const parsed = parseSyllabus(req.body.rawText);
     res.json({ parsed });
   } catch (error) {
     next(error);

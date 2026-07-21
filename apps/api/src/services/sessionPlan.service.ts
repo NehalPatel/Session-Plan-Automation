@@ -6,7 +6,7 @@ import type {
   SyllabusUnit,
   UnitSelection,
 } from "@session-plan/shared";
-import { bundleTopicsForSessions, expandSessionTopics } from "./ai.service.js";
+import { bundleTopicsForSessions, expandSessionTopics } from "./syllabus.service.js";
 
 function selectUnits(units: SyllabusUnit[], selection: UnitSelection): SyllabusUnit[] {
   const sorted = [...units].sort((a, b) => a.number - b.number);
@@ -50,8 +50,8 @@ export async function generateSessionRows(
   );
 
   const sessionCount = schedule.length;
-  const bundles = await bundleTopicsForSessions(flatTopics, sessionCount);
-  const expanded = await expandSessionTopics(bundles);
+  const bundles = bundleTopicsForSessions(flatTopics, sessionCount);
+  const expanded = expandSessionTopics(bundles);
 
   return Array.from({ length: sessionCount }, (_, index) => {
     const bundle = bundles[index];
